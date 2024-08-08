@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Text to Speech Converter</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Handjet:wght@100..900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #131313;
+            color: #ffffff;
+        
+        }
+        textarea {
+            width: 100%;
+            height: 150px;
+            margin-bottom: 10px;
+        }
+        select, button {
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        #audioPlayer {
+            margin-top: 20px;
+        }
+        h1 {
+            font-family: "Handjet", sans-serif;
+          font-optical-sizing: auto;
+           font-weight: <weight>;
+           font-style: normal;
+           text-align: center;
+        }
+        .pushable {
+            position: relative;
+            background: transparent;
+            padding: 0px;
+            border: none;
+            cursor: pointer;
+            outline-offset: 4px;
+            outline-color: deeppink;
+            transition: filter 250ms;
+            -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+          }
+          
+          .shadow {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 100%;
+            background: hsl(226, 25%, 69%);
+            border-radius: 8px;
+            filter: blur(2px);
+            will-change: transform;
+            transform: translateY(2px);
+            transition: transform 600ms cubic-bezier(0.3, 0.7, 0.4, 1);
+          }
+          
+          .edge {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 100%;
+            border-radius: 8px;
+            background: linear-gradient(
+              to right,
+              hsl(248, 39%, 39%) 0%,
+              hsl(248, 39%, 49%) 8%,
+              hsl(248, 39%, 39%) 92%,
+              hsl(248, 39%, 29%) 100%
+            );
+          }
+          
+          .front {
+            display: block;
+            position: relative;
+            border-radius: 8px;
+            background: hsl(248, 53%, 58%);
+            padding: 16px 32px;
+            color: white;
+            font-family: "Handjet", sans-serif;
+            font-optical-sizing: auto;
+           font-weight: <weight>;
+           font-style: normal;
+           margin: center:""
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            font-size: 1rem;
+            transform: translateY(-4px);
+            transition: transform 600ms cubic-bezier(0.3, 0.7, 0.4, 1);
+          }
+          
+          .pushable:hover {
+            filter: brightness(110%);
+          }
+          
+          .pushable:hover .front {
+            transform: translateY(-6px);
+            transition: transform 250ms cubic-bezier(0.3, 0.7, 0.4, 1.5);
+          }
+          
+          .pushable:active .front {
+            transform: translateY(-2px);
+            transition: transform 34ms;
+          }
+          
+          .pushable:hover .shadow {
+            transform: translateY(4px);
+            transition: transform 250ms cubic-bezier(0.3, 0.7, 0.4, 1.5);
+          }
+          
+          .pushable:active .shadow {
+            transform: translateY(1px);
+            transition: transform 34ms;
+          }
+          
+          .pushable:focus:not(:focus-visible) {
+            outline: none;
+          }
+    
+        
+    </style>
+</head>
+<body>
+    <h1>حوّل النص إلى صوت</h1>
+    <form id="ttsForm">
+        <textarea id="text" name="text" placeholder="Enter text to convert to speech | ادخل النص لتحويله لصوت" dir="auto"></textarea>
+        <select id="language" name="language">
+            <option value="en">اللغة الانجليزية</option>
+            <option value="ar">اللغة العربية</option>
+        </select>
+        <button type="submit" class="pushable">  <span class="shadow"></span>
+            <span class="edge"></span>
+            <span class="front">تحويل  
+            </span>
+            </button>
+    </form>
+    <div id="audioPlayer"></div>
+
+    <script>
+        document.getElementById('ttsForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            var text = document.getElementById('text').value;
+            var language = document.getElementById('language').value;
+            fetch('/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: 'text=' + encodeURIComponent(text) + '&language=' + language
+            })
+            .then(response => response.blob())
+            .then(blob => {
+                var url = URL.createObjectURL(blob);
+                var audioPlayer = document.getElementById('audioPlayer');
+                audioPlayer.innerHTML = '<audio controls src="' + url + '">Your browser does not support the audio element.</audio>';
+            });
+        });
+
+      
+        document.getElementById('language').addEventListener('change', function() {
+            var textArea = document.getElementById('text');
+            textArea.dir = this.value === 'ar' ? 'rtl' : 'ltr';
+        });
+    </script>
+</body>
+</html>
